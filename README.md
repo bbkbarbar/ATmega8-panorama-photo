@@ -1,0 +1,1 @@
+# ATmega8-panorama-photo
