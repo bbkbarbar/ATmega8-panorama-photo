@@ -205,12 +205,16 @@ int main(){
     while(1){
         
         feedback(1);
-        
-        for(j = 0.5; j<7; j+= 0.5){  // 7*
-            generateOutputForFrequencyMeasurement(6, j);      // j -> 2
 
-            adc = (readADC(5) / 4);
-            PORTB = adc & 0b11111111;
+        adc = (readADC(5) / 4);
+        PORTB = adc & 0b11111111;
+        
+        j = ((adc / 19) + 0.5);
+        generateOutputForFrequencyMeasurement(6, j);      // j -> 2
+
+        //for(j = 0.5; j<7; j+= 0.5){  // 7*
+            //generateOutputForFrequencyMeasurement(6, j);      // j -> 2
+
 
             /*
             counter++;
@@ -219,12 +223,7 @@ int main(){
             }
             PORTB = counter & 0b11111111;
             /**/
-        }      
-        
-        _delay_ms(2000);  
-        
-        feedback(2);
-        _delay_ms(2000);
+        //}      
 
         /*
         
