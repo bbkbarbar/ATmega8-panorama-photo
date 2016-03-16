@@ -21,7 +21,8 @@
 #define FEEDBACK_PIN1              PD3
 #define FEEDBACK_PIN2              PD4
 
-#define SIGN_COUNT                  50
+//#define SIGN_COUNT                  50
+#define SIGN_COUNT                  1
 
 ////////////////////////////////        OTHERS         ////////////////////////////////
 #define DEFAULT_DELAY              100
@@ -206,10 +207,10 @@ int main(){
         
         feedback(1);
 
-        adc = (readADC(5) / 4);
+        adc = 255 - (readADC(5) / 4);
         PORTB = adc & 0b11111111;
         
-        j = ((adc / 19) + 0.5);
+        j = (((adc / 8)*0.25) + 0.37);
         generateOutputForFrequencyMeasurement(6, j);      // j -> 2
 
         //for(j = 0.5; j<7; j+= 0.5){  // 7*
