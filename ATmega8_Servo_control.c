@@ -173,7 +173,7 @@ void generateOutputForFrequencyMeasurement(double freqencyInHz, float pct){
     }
     double tCycle = (1 / freqencyInHz) * SEC_IN_US;
     double tOnInUs  = tCycle * fillFactor;
-      double tOffInUs = tCycle * (1-fillFactor);
+    double tOffInUs = tCycle * (1-fillFactor);
     //double tOffInUs = tOnInUs;
       //double tOffInUs = (tCycle - tOnInUs);
 
@@ -194,21 +194,34 @@ void generateOutputForFrequencyMeasurement(double freqencyInHz, float pct){
 int main(){
 
     init();
-    //initADC();
+    initADC();
 
     int degree = 0;
-    unsigned char adc;
+    uint16_t adc;
+    unsigned char counter = 0;
 
     float j;
 
     while(1){
         
-        
         feedback(1);
         
-        for(j = 0.5; j<7; j+= 0.25){  // 7*
+        for(j = 0.5; j<7; j+= 0.5){  // 7*
             generateOutputForFrequencyMeasurement(6, j);      // j -> 2
-        }        
+
+            adc = (readADC(5) / 4);
+            PORTB = adc & 0b11111111;
+
+            /*
+            counter++;
+            if(counter >= 254){
+                counter = 0;
+            }
+            PORTB = counter & 0b11111111;
+            /**/
+        }      
+        
+        _delay_ms(2000);  
         
         feedback(2);
         _delay_ms(2000);
