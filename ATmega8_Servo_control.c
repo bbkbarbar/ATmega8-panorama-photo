@@ -21,7 +21,8 @@
 #define FEEDBACK_PIN1              PD3
 #define FEEDBACK_PIN2              PD4
 
-#define SIGN_COUNT                  50
+//#define SIGN_COUNT                  50
+#define SIGN_COUNT                  1
 
 ////////////////////////////////        OTHERS         ////////////////////////////////
 #define DEFAULT_DELAY              100
@@ -173,7 +174,7 @@ void generateOutputForFrequencyMeasurement(double freqencyInHz, float pct){
     }
     double tCycle = (1 / freqencyInHz) * SEC_IN_US;
     double tOnInUs  = tCycle * fillFactor;
-      double tOffInUs = tCycle * (1-fillFactor);
+    double tOffInUs = tCycle * (1-fillFactor);
     //double tOffInUs = tOnInUs;
       //double tOffInUs = (tCycle - tOnInUs);
 
@@ -194,24 +195,36 @@ void generateOutputForFrequencyMeasurement(double freqencyInHz, float pct){
 int main(){
 
     init();
-    //initADC();
+    initADC();
 
     int degree = 0;
-    unsigned char adc;
+    uint16_t adc;
+    unsigned char counter = 0;
 
     float j;
 
     while(1){
         
-        
         feedback(1);
+
+        adc = 255 - (readADC(5) / 4);
+        PORTB = adc & 0b11111111;
         
-        for(j = 0.5; j<7; j+= 0.25){  // 7*
-            generateOutputForFrequencyMeasurement(6, j);      // j -> 2
-        }        
-        
-        feedback(2);
-        _delay_ms(2000);
+        j = (((adc / 8)*0.25) + 0.37);
+        generateOutputForFrequencyMeasurement(6, j);      // j -> 2
+
+        //for(j = 0.5; j<7; j+= 0.5){  // 7*
+            //generateOutputForFrequencyMeasurement(6, j);      // j -> 2
+
+
+            /*
+            counter++;
+            if(counter >= 254){
+                counter = 0;
+            }
+            PORTB = counter & 0b11111111;
+            /**/
+        //}      
 
         /*
         
