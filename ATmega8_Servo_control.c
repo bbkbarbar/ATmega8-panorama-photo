@@ -28,6 +28,8 @@
 #define DEFAULT_DELAY              100
 #define SERVO_PWM_WIDTH_IN_US     2000
 
+ #define BAR_SIZE                    8
+
 
 void wait(unsigned short val) {
 
@@ -191,6 +193,55 @@ void generateOutputForFrequencyMeasurement(double freqencyInHz, float pct){
 
 }
 
+void showfloatBar(float j){
+    
+    if(j < 1){
+        PORTB = 0b1;
+    }else
+    if(j > 10){
+        PORTB = 0b10000000;
+    }else{
+        PORTB = 0b00011000;
+    }
+
+}
+
+uint8_t getValueToShow(float val, int max){
+                       //    142      255  
+    float divVal = (max+1) / BAR_SIZE;  // 255 -> 32
+    float barLength = val / divVal;     // 4,43
+
+    uint8_t res;
+    if( barLength < 0.5 ){
+        res = 0b0;
+    }else
+    if( barLength < 1.5 ){
+        res = 0b1;
+    }else
+    if( barLength < 2.5 ){
+        res = 0b11;
+    }else
+    if( barLength < 3.5 ){
+        res = 0b111;
+    }else
+    if( barLength < 4.5 ){
+        res = 0b1111;           // 0b1111
+    }else
+    if( barLength < 5.5 ){
+        res = 0b11111;
+    }else
+    if( barLength < 6.5 ){
+        res = 0b111111;
+    }else
+    if( barLength < 7.5 ){
+        res = 0b1111111;
+    }else{
+        res = 0b11111111;
+    }
+
+return res;
+}
+
 
 int main(){
 
@@ -206,12 +257,18 @@ int main(){
     while(1){
         
         feedback(1);
-
-        adc = 255 - (readADC(5) / 4);
-        PORTB = adc & 0b11111111;
+    
+        //generateOutputForFrequencyMeasurement(6, 70f);      // j -> 2
         
-        j = (((adc / 8)*0.25) + 0.37);
-        generateOutputForFrequencyMeasurement(6, j);      // j -> 2
+        adc = (readADC(5) / 4);
+        PORTB = getValueToShow(adc, 255);
+        //PORTB = adc & 0b11111111;
+        
+        j = (((adc / 4) * 0.07) );
+        //showfloatBar(j);
+        generateOutputForFrequencyMeasurement(5, j);      // j -> 2
+
+        /**/
 
         //for(j = 0.5; j<7; j+= 0.5){  // 7*
             //generateOutputForFrequencyMeasurement(6, j);      // j -> 2
