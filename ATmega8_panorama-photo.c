@@ -9,6 +9,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "ATmega8_servo_control.c"
+
 #define SEC_IN_US      1000000
 
 ////////////////////////////////     PORT DEFINITIONS    ////////////////////////////////
@@ -248,11 +250,15 @@ int main(){
     init();
     initADC();
 
+    initServoControl();
+
     int degree = 0;
     uint16_t adc;
     unsigned char counter = 0;
 
     float j;
+    
+    setServoPosition(SERVO_RIGHT);
 
     while(1){
         
