@@ -14,11 +14,12 @@
  *                      Boor Andras - 2016                            *
  *                                                                    *
  *********************************************************************/
+
 #include <avr\io.h>
-#include <util\delay.h>
 
 #define SERVO_OUTPUT_MIN 	 450
 #define SERVO_OUTPUT_MAX 	2400
+
 
 #define SERVO_LEFT			SERVO_OUTPUT_MAX
 #define SERVO_RIGHT			SERVO_OUTPUT_MIN
@@ -43,6 +44,6 @@ void initServoControl(){
 	(0<<CS12) | (1<<CS11) | (0<<CS10);
 }
 
-void setServoPosition(unsigned int position){
+void setServoPosition(unsigned short position){
 	OCR1A = position;
 }
