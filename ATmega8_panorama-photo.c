@@ -33,9 +33,9 @@
 //////////////////////////////////        OTHERS         ////////////////////////////////
 #define DEFAULT_DELAY              100
 
-#include "ATmega8_read_ADC.c"
-#include "ATmega8_servo_control.c"
-#include "bar_display.c"
+#include "lib/ATmega8_read_ADC.c"
+#include "lib/ATmega8_servo_control.c"
+#include "lib/bar_display.c"
 
 
 void wait(unsigned short val) {
