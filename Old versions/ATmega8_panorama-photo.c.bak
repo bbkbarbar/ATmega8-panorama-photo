@@ -58,46 +58,19 @@ int main(){
 
     uint16_t adc;
 
-	float val = (float) SERVO_OUTPUT_MIN;
-	#define STEP 1.0f
-	unsigned char direction;
 
     while(1){
         
         adc = (readADC(0));
 
         if( ((PINB >> 7) & 0b1) ){
-			
-			setServoPosition(val);
-			OUTPUT_PORT = getValueToShowPosition(val-SERVO_OUTPUT_MIN, SERVO_OUTPUT_MAX-SERVO_OUTPUT_MIN);
-			_delay_ms(30);
-            
-            val+= STEP;
-            if(val >= SERVO_OUTPUT_MAX){
-                PORTB |= 0b100;
-                OUTPUT_PORT = 0xFF;
-                val = SERVO_OUTPUT_MIN;
-                
-                for(int i=0; i<20; i++)
-                    _delay_ms(1000);
-                PORTB &= ~0b100;
-                setServoPosition(val);
-                
-                PORTB |= 0b1;
-                for(int i=0; i<20; i++)
-                    _delay_ms(1000);
-                PORTB &= ~0b1;
-            }
-
-			/*
             OUTPUT_PORT = getValueToShowPosition(adc, 1023);
-			/**/
-            
-        }else{     
-            PORTD = 255;
-            //OUTPUT_PORT = getValueToShowPosition(adc, 1023);
-            setServoPosition(  ((1023-adc) * 1.9f) + 450 );
-		}
+            continue;
+        }        
+        
+        PORTD = 255;
+        //OUTPUT_PORT = getValueToShowPosition(adc, 1023);
+        setServoPosition(  ((1023-adc) * 1.9f) + 450 );
 
     }
 
