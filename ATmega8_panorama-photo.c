@@ -1,14 +1,33 @@
 // ATmega8_Servo_control_WORKS_with_custom_50Hz_output_signal.c
 
-/*************************
- *    CURRENT version    *
- ************************/
+/*******************************
+ *       CURRENT version       *
+ *                             *
+ * Device: ATmega8             *
+ *                             *
+ * Pin configuration:          *
+ *   @used:                    *
+ *   - Button 1:   PB7         *
+ *   - Potmeter 1: PC0 (ch0)   *
+ *   - Servo:      PB1 (OC1A)  *
+ *   @planned                  *
+ *   - Button 2:   P__         *
+ *   - Potmeter 2: PC_ (ch_)   *
+ *   - LED1-green: P__         *
+ *   - LED1-red:   P__         *
+ *                             *
+ *                             *
+ *                             *
+ *     Boor Andras  @ 2016     *
+ ******************************/
 
 #define F_CPU 1000000
 
 #include <util/delay.h>
 
 ////////////////////////////////     PORT DEFINITIONS    ////////////////////////////////
+#define PORT_OF_BUTTONS          PINB
+// @Testing only
 #define OUTPUT_PORT              PORTD
 
 //////////////////////////////////        OTHERS         ////////////////////////////////
