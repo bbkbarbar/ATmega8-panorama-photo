@@ -7,8 +7,16 @@ With this device the **user can create panorama photos** without "fitting proble
 **or** can create **time-lapse videos with** using (very) slowly **rotating camera**.  
 This device can be placed between any standard camera-tripod (or any other camera-mount) and the camera (or any other device what can be placed on a standard tripod (will be called as "camera" below)).
 It can rotate the camera to selected direction with selected speed.
+The device works from standard lithium battery with built-in battery charger.
 
-
+Features:
+ - User can select the direction of rotating
+ - User can select the speed of rotating
+ - Device can be mounted in any standard tripod (or any other device what uses standard mount-screw)
+ - Any camera, cellphone mount or any other devices can be mounted on the top of this device which can be mounted on a standard tripod
+ - User can set the position of mounted device in 2 axis to reach the optimal position of camera (where the camera's lens is exactly above the center point of rotation)
+ - Works with using own Li-ion battery
+ - Contains built-in battery charger module (charging current max 1A from micro-usb port)
 
 **Sequence diagram of states**
 ```sequence
