@@ -38,6 +38,16 @@
 #include "lib/bar_display.c"
 
 
+//////////////////////////////////        STATES         ////////////////////////////////
+ // Ready to use. User can set start direction and speed.
+ // System is waiting for start input (btn). (Servo continuously follow the setted position.)
+#define READY                   0
+ // Rotation started, but not finished yet.
+#define ROTATION_IN_PROGRESS    1
+ // Rotation finished.System is waiting for user input (btn) to get "READY" state.
+#define ROTATION_DONE           2
+
+
 void wait(unsigned short val) {
 
     while(val--) _delay_ms(1);
