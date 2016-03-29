@@ -3,7 +3,7 @@ Panorama-photo
 Target device: **ATmega8**
 
 Functionality:
-With this device the **user can create panorama photos** without "fitting problems"
+With this device the **user can create panorama photos** without "fitting problems"  
 **or** can create **time-lapse videos with** using (very) slowly **rotating camera**.  
 This device can be placed between any standard camera-tripod (or any other camera-mount) and the camera (or any other device what can be placed on a standard tripod (will be called as "camera" below)).
 It can rotate the camera to selected direction with selected speed.
