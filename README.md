@@ -10,3 +10,5 @@ ROTATION_IN_PROGRESS->ROTATION_DONE: Rotation finished.
 Note right of ROTATION_DONE: System is waiting for user input (btn) to get "READY" state.
 ROTATION_DONE->READY: Button pressed (any)
 ```
+
+
