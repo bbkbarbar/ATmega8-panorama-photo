@@ -43,4 +43,7 @@ ROTATION_DONE->READY: Button pressed (any)
 " target="_blank"><img src="http://img.youtube.com/vi/i8isvKmdPvM/1.jpg"
 alt="IMAGE ALT TEXT HERE" width="240" height="180" border="1" /></a>
 
+**UseCase diagram**
+![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/useCase_plan_1.png "UseCase diagram")
+
 [I'm an inline-style link](https://www.google.com)
