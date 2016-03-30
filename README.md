@@ -36,12 +36,7 @@ ROTATION_DONE->READY: Button pressed (any)
 
 Last hw-connected test:
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=i8isvKmdPvM
-" target="_blank"><img src="http://img.youtube.com/vi/i8isvKmdPvM/2.jpg"
-alt="IMAGE ALT TEXT HERE" width="480" height="360" border="0" /></a>
-
-
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=i8isvKmdPvM
-" target="_blank"><img src="http://img.youtube.com/vi/i8isvKmdPvM/4.jpg"
-alt="IMAGE ALT TEXT HERE" width="24" height="18" border="0" /></a>
+" target="_blank"><img src="http://img.youtube.com/vi/i8isvKmdPvM/1.jpg"
+alt="IMAGE ALT TEXT HERE" width="240" height="180" border="1" /></a>
 
 [I'm an inline-style link](https://www.google.com)
