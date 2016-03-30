@@ -27,16 +27,6 @@ The device works from standard lithium battery with built-in battery charger.
 ![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/Sequence.png "Basic sequence diagram")
 
 
-```sequence
-READY-->READY: User can set the initial direction
-Note right of READY: Servo continuously follow the adjusted position.
-READY-->READY: User can set the speed of rotation
-READY->ROTATION_IN_PROGRESS: User press a button (for selected end)
-ROTATION_IN_PROGRESS->ROTATION_DONE: Rotation finished.
-Note right of ROTATION_DONE: System is waiting for user input (btn) to get "READY" state.
-ROTATION_DONE->READY: Button pressed (any)
-```
-
 #### Last hw-connected test:
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=i8isvKmdPvM
