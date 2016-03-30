@@ -37,6 +37,9 @@
 #include "lib/ATmega8_servo_control.c"
 #include "lib/bar_display.c"
 
+//#define TEST
+#define TESTBOARD
+
 #ifndef DELAY_INCLUDED
     #include <util/delay.h>
     #define DELAY_INCLUDED
@@ -45,18 +48,25 @@
 
 /////////////////////////////////     HW DEFINITIONS    /////////////////////////////////
 //  LED
-#define PORT_OF_LEDS            PORTD
+#define PORT_OF_LEDS            PORTB
 #define LED_PIN_GREEN           6
 #define LED_PIN_RED             7
 
 //  BUTTON
-#define PORT_INPUT_OF_BUTTONS   PIND
-#define PORT_OF_BUTTONS         PORTD
-#define BUTTON_1_PIN            0
-#define BUTTON_2_PIN            1
+#ifndef TESTBOARD
+    #define PORT_INPUT_OF_BUTTONS   PIND
+    #define PORT_OF_BUTTONS         PORTD
+    #define BUTTON_1_PIN            0
+    #define BUTTON_2_PIN            1
+#else
+    #define PORT_INPUT_OF_BUTTONS   PINB
+    #define PORT_OF_BUTTONS         PORTB
+    #define BUTTON_1_PIN            4
+    #define BUTTON_2_PIN            5
+#endif
 //#define BUTTON_3_PIN          2                                   // inactive in v1
 
-#define BTN_TEST                (PINB >> 7)
+//#define BTN_TEST                (PINB >> 7)
 #define BTN_1                   (PORT_INPUT_OF_BUTTONS >> BUTTON_1_PIN)
 #define BTN_2                   (PORT_INPUT_OF_BUTTONS >> BUTTON_2_PIN)
 //#define PIN_BTN_3             (PORT_INPUT_OF_BUTTONS >> BUTTON_3_PIN)   // inactive in v1
@@ -148,7 +158,7 @@ void init(){
     //                 LED
     // Set LED pins as output
     DDRB |= (1 << LED_PIN_GREEN) 
-         |  (1 << LED_PIN_GREEN);
+         |  (1 << LED_PIN_RED);
 
     //              POTMETERS
     // DDRC set as input for ADC in initADC() function
@@ -175,6 +185,8 @@ int main(){
     uint16_t positionInput, speedInput;
 
     unsigned char btnPressedPreviously = 0;
+
+#ifndef TEST
 
     unsigned char currentState = READY;
     setLed(GREEN);
@@ -275,6 +287,18 @@ int main(){
         } // eof ROTATION_DONE
 
     }
+
+#endif
+#ifdef TEST
+
+    setLed(YELLOW);
+    while(1){
+
+        // TestCode here
+        
+
+    }
+#endif
 
     return 0;
 
