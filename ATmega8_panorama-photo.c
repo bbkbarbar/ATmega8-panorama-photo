@@ -31,7 +31,7 @@
  *                             *
  ******************************/
 
-#define TEST
+//#define TEST
 #define TESTBOARD
 
 #define F_CPU 1000000
@@ -157,7 +157,7 @@ void setLed(unsigned short color){
 }
 
 
-#define isRotationDone() ( ((btnPressedPreviously == RIGHT && (getServoPosition() > RIGHT_END_POSITION)) || (btnPressedPreviously == LEFT && (getServoPosition() < LEFT_END_POSITION)))?0:1 )
+#define isRotationDone() ( ((btnPressedPreviously == RIGHT && (getServoPosition() > RIGHT_END_POSITION+100)) || (btnPressedPreviously == LEFT && (getServoPosition() < LEFT_END_POSITION-100)))?0:1 )
 
 
 void init(){   
@@ -213,7 +213,12 @@ int main(){
             
             // User can set initial direction and speed.
             positionInput = readADC(POT1);
+            wait(5);
             speedInput =    readADC(POT2);
+            wait(5);
+            #ifdef TESTBOARD
+                LEDBAR = getValueToShow(speedInput, POT_MAX_VALUE);
+            #endif
 
             // Servo continuously follow the setted position.
             setServoPosition(  ((POT_MAX_VALUE-positionInput) * 1.9f) + SERVO_OUTPUT_MIN );
@@ -257,6 +262,11 @@ int main(){
             }else{
                 if(btnPressedPreviously == RIGHT){
                     //TODO
+                    #ifdef TESTBOARD
+                        LEDBAR = getValueToShow(getServoPosition()-SERVO_OUTPUT_MIN, SERVO_OUTPUT_MAX - SERVO_OUTPUT_MIN);
+                    #endif
+                    setServoPosition(getServoPosition() - 1);
+                    wait(10 + (unsigned short)(speedInput/8));
                 }
                 else
                 if(btnPressedPreviously == LEFT){
