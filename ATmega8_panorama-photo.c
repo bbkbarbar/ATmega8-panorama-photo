@@ -309,7 +309,10 @@ int main(){
         // TestCode here
         positionInput = readADC(POT1);
         speedInput =    readADC(POT2);
-        LEDBAR = getValueToShow(positionInput, POT_MAX_VALUE);
+        unsigned char output = 0;
+        output |= getValueToShow(positionInput / 2, POT_MAX_VALUE/2);
+        output |= getValueToShow(speedInput / 2, POT_MAX_VALUE/2) << 4;
+        LEDBAR = output;
     }
 
 #endif
