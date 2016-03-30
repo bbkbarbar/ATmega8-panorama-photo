@@ -5,18 +5,6 @@
  *                             *
  * Device: ATmega8             *
  *                             *
- * Pin configuration @TEST:    *
- *   @used:                    *
- *   - Button 1:   PB7         *
- *   - Potmeter 1: PC0 (ch0)   *
- *   - Servo:      PB1 (OC1A)  *
- *   @planned                  *
- *   - Button 2:   P__         *
- *   - Potmeter 2: PC_ (ch_)   *
- *   - LED1-green: P__         *
- *   - LED1-red:   P__         *
- *                             *
- *                             *
  * Pin configuration:          *
  *   @used:                    *
  *   - Button 1:   PD0         *
@@ -26,6 +14,11 @@
  *   - Servo:      PB1 (OC1A)  *
  *   - LED1-green: PB6         *
  *   - LED1-red:   PB7         *
+ *                             *
+ * Pin configuration @TEST:    *
+ *   - Button 1:   PB5         *
+ *   - Button 2:   PB4         *
+ *   - LEDBAR:     PD0-7       *
  *                             *
  *     Boor Andras  @ 2016     *
  *                             *
@@ -64,8 +57,8 @@
 #else
     #define PORT_INPUT_OF_BUTTONS   PINB
     #define PORT_OF_BUTTONS         PORTB
-    #define BUTTON_1_PIN            4
-    #define BUTTON_2_PIN            5
+    #define BUTTON_1_PIN            5
+    #define BUTTON_2_PIN            4
 #endif
 //#define BUTTON_3_PIN          2                                   // inactive in v1
 
@@ -110,7 +103,10 @@
 
 // System wait for BUTTON_RELEASE_DELAY ms before do the next command
 // to avoid unwanted re-detection of buttonPress on same button.
-#define BUTTON_RELEASE_DELAY    200
+#define BUTTON_RELEASE_DELAY    300
+
+//
+#define SERVO_EDGE_THRESHOLD    100
 
 //////////////////////////////////        STATES         ////////////////////////////////
  // Ready to use. User can set initial direction and speed.
@@ -157,8 +153,11 @@ void setLed(unsigned short color){
 }
 
 
-#define isRotationDone() ( ((btnPressedPreviously == RIGHT && (getServoPosition() > RIGHT_END_POSITION+100)) || (btnPressedPreviously == LEFT && (getServoPosition() < LEFT_END_POSITION-100)))?0:1 )
+#define isRotationDone() ( ((btnPressedPreviously == RIGHT && (getServoPosition() > RIGHT_END_POSITION + SERVO_EDGE_THRESHOLD)) || (btnPressedPreviously == LEFT && (getServoPosition() < LEFT_END_POSITION - SERVO_EDGE_THRESHOLD)))?0:1 )
 
+unsigned short diff(unsigned short x, unsigned short y){
+    return ( ((x)>(y))?((x)-(y)):((y)-(x)) );
+}
 
 void init(){   
     
@@ -221,7 +220,12 @@ int main(){
             #endif
 
             // Servo continuously follow the setted position.
-            setServoPosition(  ((POT_MAX_VALUE-positionInput) * 1.9f) + SERVO_OUTPUT_MIN );
+            /*unsigned short newPosition = ( ((unsigned short)(POT_MAX_VALUE-positionInput) * 1.9f) + SERVO_OUTPUT_MIN);
+            if(diff(newPosition, getServoPosition) > 60){
+                setServoPosition( ((unsigned short)(POT_MAX_VALUE-positionInput) * 1.9f) + SERVO_OUTPUT_MIN );
+            }*/
+            setServoPosition( ((unsigned short)(POT_MAX_VALUE-positionInput) * 1.9f) + SERVO_OUTPUT_MIN );
+            wait(30);
 
 
             // System is waiting for start input (btn). 
