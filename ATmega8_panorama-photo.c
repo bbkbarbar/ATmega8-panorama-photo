@@ -50,15 +50,16 @@
 #define LED_PIN_RED             7
 
 //  BUTTON
+#define PORT_INPUT_OF_BUTTONS   PIND
+#define PORT_OF_BUTTONS         PORTD
 #define BUTTON_1_PIN            0
 #define BUTTON_2_PIN            1
 //#define BUTTON_3_PIN          2                                   // inactive in v1
 
-#define PORT_OF_BUTTONS         PIND
 #define BTN_TEST                (PINB >> 7)
-#define BTN_1                   (PORT_OF_BUTTONS >> BUTTON_1_PIN)
-#define BTN_2                   (PORT_OF_BUTTONS >> BUTTON_2_PIN)
-//#define PIN_BTN_3             (PORT_OF_BUTTONS >> BUTTON_3_PIN)   // inactive in v1
+#define BTN_1                   (PORT_INPUT_OF_BUTTONS >> BUTTON_1_PIN)
+#define BTN_2                   (PORT_INPUT_OF_BUTTONS >> BUTTON_2_PIN)
+//#define PIN_BTN_3             (PORT_INPUT_OF_BUTTONS >> BUTTON_3_PIN)   // inactive in v1
 
 // Read button states
 #define isPressed(x)             ((x & 0b1) == 0)
@@ -89,6 +90,10 @@
 #define LEFT                    2
 #define BTN_RIGHT               BTN_1
 #define BTN_LEFT                BTN_2
+
+// System wait for BUTTON_RELEASE_DELAY ms before do the next command
+// to avoid unwanted re-detection of buttonPress on same button.
+#define BUTTON_RELEASE_DELAY    100
 
 //////////////////////////////////        STATES         ////////////////////////////////
  // Ready to use. User can set initial direction and speed.
@@ -134,13 +139,16 @@ void setLed(unsigned short color){
     }
 }
 
+
 #define isRotationDone() ( ((btnPressedPreviously == RIGHT && (getServoPosition() > RIGHT_END_POSITION)) || (btnPressedPreviously == LEFT && (getServoPosition() < LEFT_END_POSITION)))?0:1 )
+
 
 void init(){   
     
     //                 LED
     // Set LED pins as output
-    DDRB |= (1 << LED_PIN_GREEN) | (1 << LED_PIN_GREEN);
+    DDRB |= (1 << LED_PIN_GREEN) 
+         |  (1 << LED_PIN_GREEN);
 
     //              POTMETERS
     // DDRC set as input for ADC in initADC() function
@@ -152,7 +160,8 @@ void init(){
 
     //               BUTTONS
     // Setup the pull-up resistor for buttons 
-    PORT_OF_LEDS |= (1 << BUTTON_1_PIN) | (1 << BUTTON_2_PIN);
+    PORT_OF_BUTTONS |= (1 << BUTTON_1_PIN) 
+                    |  (1 << BUTTON_2_PIN);
     //PORTB |= 0b10000000; //PB7 pin for TEST
 
 }
@@ -168,6 +177,7 @@ int main(){
     unsigned char btnPressedPreviously = 0;
 
     unsigned char currentState = READY;
+    setLed(GREEN);
 
         //adc1 = (readADC(POT_TEST));
         //if( released(BTN_TEST) ){
@@ -186,7 +196,7 @@ int main(){
 
 
             // System is waiting for start input (btn). 
-            if( btnPressedPreviously == 0 ){
+            if( btnPressedPreviously == NONE ){
 
                 if(isPressed(BTN_RIGHT)){
                     btnPressedPreviously = RIGHT;
@@ -201,19 +211,24 @@ int main(){
                     ((btnPressedPreviously == LEFT ) && (isReleased(BTN_LEFT ))) ){ 
                     // button what has been pressed previously is released now..
                     // btnPressedPreviously variable stores the identifier of button what has been released just now.
+                    setLed(RED);
                     currentState = ROTATION_IN_PROGRESS;
+                    wait(BUTTON_RELEASE_DELAY);
                 }
 
             }
 
         } // eof READY state
+
         else
+
         if(currentState == ROTATION_IN_PROGRESS){ // Rotation started, but not finished yet.
 
             if(isRotationDone()){
 
                 btnPressedPreviously = NONE;
-                currentState == ROTATION_DONE;
+                currentState = ROTATION_DONE;
+                setLed(YELLOW);
 
             }else{
                 if(btnPressedPreviously == RIGHT){
@@ -226,11 +241,36 @@ int main(){
             }
 
         } // eof ROTATION_IN_PROGRESS
-        else
-        if(currentState == ROTATION_DONE){ // Rotation finished.
 
-            // System is waiting for user input (btn) to get "READY" state.
-            //TODO
+        else
+
+        if(currentState == ROTATION_DONE){ // Rotation finished. 
+
+            // System is waiting for user input (button press and release) 
+            // before servo returns to initial direction and get "READY" state. 
+
+            // Check that any button is pressed..
+            if(btnPressedPreviously == NONE){
+                if(isPressed(BTN_RIGHT)){
+                    btnPressedPreviously = RIGHT;
+                }else
+                if(isPressed(BTN_LEFT)){
+                    btnPressedPreviously = LEFT;
+                }
+            }else{
+                // Check that previously pressed button is released..
+                if( (btnPressedPreviously == RIGHT) && (isReleased(BTN_RIGHT)) ||
+                    (btnPressedPreviously == LEFT ) && (isReleased(BTN_LEFT )) ){
+                    
+                    btnPressedPreviously = NONE;
+                    
+                    wait(BUTTON_RELEASE_DELAY);
+
+                    currentState = READY;
+                    setLed(GREEN);
+
+                }
+            }
 
         } // eof ROTATION_DONE
 
