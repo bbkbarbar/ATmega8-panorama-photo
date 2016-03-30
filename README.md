@@ -34,7 +34,10 @@ Note right of ROTATION_DONE: System is waiting for user input (btn) to get "READ
 ROTATION_DONE->READY: Button pressed (any)
 ```
 
-
+Last hw-connected test:
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=i8isvKmdPvM
+" target="_blank"><img src="http://img.youtube.com/vi/i8isvKmdPvM/2.jpg"
+alt="IMAGE ALT TEXT HERE" width="480" height="360" border="0" /></a>
 
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=i8isvKmdPvM
