@@ -12,7 +12,7 @@ This device can be placed between any standard camera-tripod (or any other camer
 It can rotate the camera to selected direction with selected speed.
 The device works from standard lithium battery with built-in battery charger.
 
-### Target device: **ATmega8**
+### Target MCU: **ATmega8**
 
 ### Features:
  - User can select the direction of rotating
