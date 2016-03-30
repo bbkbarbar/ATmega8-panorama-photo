@@ -31,14 +31,17 @@
  *                             *
  ******************************/
 
+#define TEST
+#define TESTBOARD
+
 #define F_CPU 1000000
 
 #include "lib/ATmega8_read_ADC.c"
 #include "lib/ATmega8_servo_control.c"
+#ifdef TESTBOARD
 #include "lib/bar_display.c"
+#endif
 
-//#define TEST
-#define TESTBOARD
 
 #ifndef DELAY_INCLUDED
     #include <util/delay.h>
@@ -86,6 +89,10 @@
 #define GREEN                   1
 #define RED                     2
 #define YELLOW                  3
+
+#ifdef TESTBOARD
+    #define LEDBAR              PORTD
+#endif
 
 //////////////////////////////////        OTHERS         ////////////////////////////////
 #define DEFAULT_DELAY           100
@@ -173,6 +180,11 @@ void init(){
     PORT_OF_BUTTONS |= (1 << BUTTON_1_PIN) 
                     |  (1 << BUTTON_2_PIN);
     //PORTB |= 0b10000000; //PB7 pin for TEST
+
+    #ifdef TESTBOARD
+        DDRD = 0xFF;
+        LEDBAR = 170;
+    #endif
 
 }
 
@@ -295,9 +307,11 @@ int main(){
     while(1){
 
         // TestCode here
-        
-
+        positionInput = readADC(POT1);
+        speedInput =    readADC(POT2);
+        LEDBAR = getValueToShow(positionInput, POT_MAX_VALUE);
     }
+
 #endif
 
     return 0;
