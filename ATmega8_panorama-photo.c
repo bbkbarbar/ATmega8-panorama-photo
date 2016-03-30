@@ -5,7 +5,7 @@
  *                             *
  * Device: ATmega8             *
  *                             *
- * Pin configuration:          *
+ * Pin configuration @TEST:    *
  *   @used:                    *
  *   - Button 1:   PB7         *
  *   - Potmeter 1: PC0 (ch0)   *
@@ -17,29 +17,81 @@
  *   - LED1-red:   P__         *
  *                             *
  *                             *
+ * Pin configuration:          *
+ *   @used:                    *
+ *   - Button 1:   PD0         *
+ *   - Button 2:   PD1         *
+ *   - Potmeter 1: PC5 (ch5)   *
+ *   - Potmeter 2: PC4 (ch4)   *
+ *   - Servo:      PB1 (OC1A)  *
+ *   - LED1-green: PB6         *
+ *   - LED1-red:   PB7         *
  *                             *
  *     Boor Andras  @ 2016     *
+ *                             *
  ******************************/
 
 #define F_CPU 1000000
-
-#include <util/delay.h>
-
-////////////////////////////////     PORT DEFINITIONS    ////////////////////////////////
-#define PORT_OF_BUTTONS          PINB
-// @Testing only
-#define OUTPUT_PORT              PORTD
-
-//////////////////////////////////        OTHERS         ////////////////////////////////
-#define DEFAULT_DELAY              100
 
 #include "lib/ATmega8_read_ADC.c"
 #include "lib/ATmega8_servo_control.c"
 #include "lib/bar_display.c"
 
+#ifndef DELAY_INCLUDED
+    #include <util/delay.h>
+    #define DELAY_INCLUDED
+#endif
+
+
+/////////////////////////////////     HW DEFINITIONS    /////////////////////////////////
+//  LED
+#define PORT_OF_LEDS            PORTD
+#define LED_PIN_GREEN           6
+#define LED_PIN_RED             7
+
+//  BUTTON
+#define BUTTON_1_PIN            0
+#define BUTTON_2_PIN            1
+//#define BUTTON_3_PIN          2                                   // inactive in v1
+
+#define PORT_OF_BUTTONS         PIND
+#define BTN_TEST                (PINB >> 7)
+#define BTN_1                   (PORT_OF_BUTTONS >> BUTTON_1_PIN)
+#define BTN_2                   (PORT_OF_BUTTONS >> BUTTON_2_PIN)
+//#define PIN_BTN_3             (PORT_OF_BUTTONS >> BUTTON_3_PIN)   // inactive in v1
+
+// Read button states
+#define isPressed(x)             ((x & 0b1) == 0)
+#define isReleased(x)            ((x & 0b1) == 1)
+
+
+// ADC channels of potmeters
+#define POT_TEST                0
+#define POT1                    5
+#define POT2                    4
+
+// States of feedback LED
+#define OFF                     0
+#define GREEN                   1
+#define RED                     2
+#define YELLOW                  3
+
+//////////////////////////////////        OTHERS         ////////////////////////////////
+#define DEFAULT_DELAY           100
+
+#define POT_MAX_VALUE           1023
+
+#define RIGHT_END_POSITION      SERVO_RIGHT
+#define LEFT_END_POSITION       SERVO_LEFT
+
+#define NONE                    0
+#define RIGHT                   1
+#define LEFT                    2
+#define BTN_RIGHT               BTN_1
+#define BTN_LEFT                BTN_2
 
 //////////////////////////////////        STATES         ////////////////////////////////
- // Ready to use. User can set start direction and speed.
+ // Ready to use. User can set initial direction and speed.
  // System is waiting for start input (btn). (Servo continuously follow the setted position.)
 #define READY                   0
  // Rotation started, but not finished yet.
@@ -63,20 +115,47 @@ void wait_us(double val){
 }
 
 
+// Set color of feedback led (RG)
+void setLed(unsigned short color){
+    if(color == GREEN){
+        PORT_OF_LEDS &= ~(1 << LED_PIN_RED); 
+        PORT_OF_LEDS |=  (1 << LED_PIN_GREEN);
+    }else
+    if(color == RED){
+        PORT_OF_LEDS |=  (1 << LED_PIN_RED); 
+        PORT_OF_LEDS &= ~(1 << LED_PIN_GREEN);
+    }else
+    if(color == YELLOW){
+        PORT_OF_LEDS |=  (1 << LED_PIN_RED); 
+        PORT_OF_LEDS |=  (1 << LED_PIN_GREEN);
+    }else{
+        PORT_OF_LEDS &= ~(1 << LED_PIN_RED); 
+        PORT_OF_LEDS &= ~(1 << LED_PIN_GREEN);
+    }
+}
+
+#define isRotationDone() ( ((btnPressedPreviously == RIGHT && (getServoPosition() > RIGHT_END_POSITION)) || (btnPressedPreviously == LEFT && (getServoPosition() < LEFT_END_POSITION)))?0:1 )
+
 void init(){   
-    //        76543210
-    DDRB  = 0b01111111;    
-    DDRD  = 0b11111111;
-          
-    PORTC = 0;
-    PORTD = 0x01;
+    
+    //                 LED
+    // Set LED pins as output
+    DDRB |= (1 << LED_PIN_GREEN) | (1 << LED_PIN_GREEN);
+
+    //              POTMETERS
+    // DDRC set as input for ADC in initADC() function
+
+    //                SERVO
+    // Output of servo set as output initServoControl() function
           
     //DDRB = (1<<PB0)|(1<<PB4)|(1<<PB5)|(1<<PB6)|(1<<PB7);
 
-    // Setup the pull-up resistor on PB7 pin
-    PORTB |= 0b10000000; 
-}
+    //               BUTTONS
+    // Setup the pull-up resistor for buttons 
+    PORT_OF_LEDS |= (1 << BUTTON_1_PIN) | (1 << BUTTON_2_PIN);
+    //PORTB |= 0b10000000; //PB7 pin for TEST
 
+}
 
 int main(){
 
@@ -84,49 +163,76 @@ int main(){
     initADC();
     initServoControl();
     
+    uint16_t positionInput, speedInput;
 
-    uint16_t adc;
+    unsigned char btnPressedPreviously = 0;
 
-	float val = (float) SERVO_OUTPUT_MIN;
-	#define STEP 1.0f
-	unsigned char direction;
+    unsigned char currentState = READY;
+
+        //adc1 = (readADC(POT_TEST));
+        //if( released(BTN_TEST) ){
+        //setServoPosition(val);
 
     while(1){
         
-        adc = (readADC(0));
-
-        if( ((PINB >> 7) & 0b1) ){
-			
-			setServoPosition(val);
-			OUTPUT_PORT = getValueToShowPosition(val-SERVO_OUTPUT_MIN, SERVO_OUTPUT_MAX-SERVO_OUTPUT_MIN);
-			_delay_ms(30);
+        if(currentState == READY){ 
             
-            val+= STEP;
-            if(val >= SERVO_OUTPUT_MAX){
-                PORTB |= 0b100;
-                OUTPUT_PORT = 0xFF;
-                val = SERVO_OUTPUT_MIN;
+            // User can set initial direction and speed.
+            positionInput = readADC(POT1);
+            speedInput =    readADC(POT2);
+
+            // Servo continuously follow the setted position.
+            setServoPosition(  ((POT_MAX_VALUE-positionInput) * 1.9f) + SERVO_OUTPUT_MIN );
+
+
+            // System is waiting for start input (btn). 
+            if( btnPressedPreviously == 0 ){
+
+                if(isPressed(BTN_RIGHT)){
+                    btnPressedPreviously = RIGHT;
+                }else
+                if(isPressed(BTN_LEFT)){
+                    btnPressedPreviously = LEFT;
+                }
                 
-                for(int i=0; i<20; i++)
-                    _delay_ms(1000);
-                PORTB &= ~0b100;
-                setServoPosition(val);
-                
-                PORTB |= 0b1;
-                for(int i=0; i<20; i++)
-                    _delay_ms(1000);
-                PORTB &= ~0b1;
+            }else{ //if any button is pressed previously then need to wait until button is released.
+
+                if( ((btnPressedPreviously == RIGHT) && (isReleased(BTN_RIGHT))) ||
+                    ((btnPressedPreviously == LEFT ) && (isReleased(BTN_LEFT ))) ){ 
+                    // button what has been pressed previously is released now..
+                    // btnPressedPreviously variable stores the identifier of button what has been released just now.
+                    currentState = ROTATION_IN_PROGRESS;
+                }
+
             }
 
-			/*
-            OUTPUT_PORT = getValueToShowPosition(adc, 1023);
-			/**/
-            
-        }else{     
-            PORTD = 255;
-            //OUTPUT_PORT = getValueToShowPosition(adc, 1023);
-            setServoPosition(  ((1023-adc) * 1.9f) + 450 );
-		}
+        } // eof READY state
+        else
+        if(currentState == ROTATION_IN_PROGRESS){ // Rotation started, but not finished yet.
+
+            if(isRotationDone()){
+
+                btnPressedPreviously = NONE;
+                currentState == ROTATION_DONE;
+
+            }else{
+                if(btnPressedPreviously == RIGHT){
+                    //TODO
+                }
+                else
+                if(btnPressedPreviously == LEFT){
+                    //TODO
+                }
+            }
+
+        } // eof ROTATION_IN_PROGRESS
+        else
+        if(currentState == ROTATION_DONE){ // Rotation finished.
+
+            // System is waiting for user input (btn) to get "READY" state.
+            //TODO
+
+        } // eof ROTATION_DONE
 
     }
 

@@ -47,3 +47,7 @@ void initServoControl(){
 void setServoPosition(unsigned short position){
 	OCR1A = position;
 }
+
+unsigned short getServoPosition(){
+	return OCR1A;
+}
