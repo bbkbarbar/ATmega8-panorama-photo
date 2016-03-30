@@ -110,7 +110,7 @@
 
 // System wait for BUTTON_RELEASE_DELAY ms before do the next command
 // to avoid unwanted re-detection of buttonPress on same button.
-#define BUTTON_RELEASE_DELAY    100
+#define BUTTON_RELEASE_DELAY    200
 
 //////////////////////////////////        STATES         ////////////////////////////////
  // Ready to use. User can set initial direction and speed.
@@ -266,7 +266,7 @@ int main(){
                         LEDBAR = getValueToShow(getServoPosition()-SERVO_OUTPUT_MIN, SERVO_OUTPUT_MAX - SERVO_OUTPUT_MIN);
                     #endif
                     setServoPosition(getServoPosition() - 1);
-                    wait(10 + (unsigned short)(speedInput/8));
+                    wait(50 + (unsigned short)(speedInput));
                 }
                 else
                 if(btnPressedPreviously == LEFT){
