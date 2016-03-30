@@ -24,6 +24,9 @@ The device works from standard lithium battery with built-in battery charger.
  - Contains built-in battery charger module (charging current max 1A from micro-usb port)
 
 **Sequence diagram of states**
+![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/Sequence.png "Basic sequence diagram")
+
+
 ```sequence
 READY-->READY: User can set the initial direction
 Note right of READY: Servo continuously follow the adjusted position.
