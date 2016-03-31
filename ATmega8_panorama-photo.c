@@ -126,7 +126,9 @@ void wait(unsigned short val) {
 }
 
 void _wait(){
+
     _delay_ms(DEFAULT_DELAY);
+
 }
 
 
@@ -264,6 +266,7 @@ int main(){
                 setLed(YELLOW);
 
             }else{
+
                 if(btnPressedPreviously == RIGHT){
                     //TODO
                     #ifdef TESTBOARD
@@ -276,6 +279,7 @@ int main(){
                 if(btnPressedPreviously == LEFT){
                     //TODO
                 }
+
             }
 
         } // eof ROTATION_IN_PROGRESS
@@ -289,13 +293,16 @@ int main(){
 
             // Check that any button is pressed..
             if(btnPressedPreviously == NONE){
+
                 if(isPressed(BTN_RIGHT)){
                     btnPressedPreviously = RIGHT;
                 }else
                 if(isPressed(BTN_LEFT)){
                     btnPressedPreviously = LEFT;
                 }
+
             }else{
+
                 // Check that previously pressed button is released..
                 if( (btnPressedPreviously == RIGHT) && (isReleased(BTN_RIGHT)) ||
                     (btnPressedPreviously == LEFT ) && (isReleased(BTN_LEFT )) ){
@@ -308,6 +315,7 @@ int main(){
                     setLed(GREEN);
 
                 }
+                
             }
 
         } // eof ROTATION_DONE
