@@ -27,7 +27,7 @@ The device works from standard lithium battery with built-in battery charger.
 ![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/Sequence.png "Basic sequence diagram")
 
 
-#### Last hw-connected test:
+#### First "mainly working" version on testboard:
 
 <a href="http://www.youtube.com/watch?i8isvKmdPvMfeature=player_embedded&v=33iNxKAsr9w
 " target="_blank"><img src="http://img.youtube.com/vi/33iNxKAsr9w/2.jpg"
