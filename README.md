@@ -29,11 +29,11 @@ The device works from standard lithium battery with built-in battery charger.
 
 #### Last hw-connected test:
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=i8isvKmdPvM
-" target="_blank"><img src="http://img.youtube.com/vi/i8isvKmdPvM/1.jpg"
+<a href="http://www.youtube.com/watch?i8isvKmdPvMfeature=player_embedded&v=33iNxKAsr9w
+" target="_blank"><img src="http://img.youtube.com/vi/33iNxKAsr9w/2.jpg"
 alt="IMAGE ALT TEXT HERE" width="240" height="180" border="1" /></a>
 
 **UseCase diagram**
 ![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/useCase_plan_1.png "UseCase diagram")
 
-[I'm an inline-style link](https://www.google.com)
+[Previous test](https://youtu.be/i8isvKmdPvM)
