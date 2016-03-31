@@ -1,28 +1,28 @@
 // ATmega8_Servo_control_WORKS_with_custom_50Hz_output_signal.c
 
-/***************************************
- *           CURRENT version           *
- *                                     *
- *  Device: ATmega8                    *
- *                                     *
- *  Pin configuration:                 *
- *   @used:                            *
- *   - Button 1:   PD0                 *
- *   - Button 2:   PD1                 *
- *   - Potmeter 1: PC5 (ch5)           *
- *   - Potmeter 2: PC4 (ch4)           *
- *   - Servo:      PB1 (OC1A)          *
- *   - LED1-green: PB6                 *
- *   - LED1-red:   PB7                 *
- *                                     *
- *  Pin configuration @TEST:           *
- *   - Button 1:   PB5                 *
- *   - Button 2:   PB4                 *
- *   - LEDBAR:     PD0-7               *
- *                                     *
- *         Boor Andras  @ 2016         *
- *                                     *
- **************************************/
+/*******************************
+ *       CURRENT version       *
+ *                             *
+ * Device: ATmega8             *
+ *                             *
+ * Pin configuration:          *
+ *   @used:                    *
+ *   - Button 1:   PD0         *
+ *   - Button 2:   PD1         *
+ *   - Potmeter 1: PC5 (ch5)   *
+ *   - Potmeter 2: PC4 (ch4)   *
+ *   - Servo:      PB1 (OC1A)  *
+ *   - LED1-green: PB6         *
+ *   - LED1-red:   PB7         *
+ *                             *
+ * Pin configuration @TEST:    *
+ *   - Button 1:   PB5         *
+ *   - Button 2:   PB4         *
+ *   - LEDBAR:     PD0-7       *
+ *                             *
+ *     Boor Andras  @ 2016     *
+ *                             *
+ ******************************/
 
 //#define TEST
 #define TESTBOARD
@@ -42,13 +42,13 @@
 #endif
 
 
-/////////////////////////////////////     HW DEFINITIONS    /////////////////////////////////////
-// LED
-#define PORT_OF_LEDS                PORTB
-#define LED_PIN_GREEN               6
-#define LED_PIN_RED                 7
+/////////////////////////////////     HW DEFINITIONS    /////////////////////////////////
+//  LED
+#define PORT_OF_LEDS            PORTB
+#define LED_PIN_GREEN           6
+#define LED_PIN_RED             7
 
-// BUTTON
+//  BUTTON
 #ifndef TESTBOARD
     #define PORT_INPUT_OF_BUTTONS   PIND
     #define PORT_OF_BUTTONS         PORTD
@@ -60,91 +60,76 @@
     #define BUTTON_1_PIN            5
     #define BUTTON_2_PIN            4
 #endif
-//#define BUTTON_3_PIN              2                                         // inactive in v1
+//#define BUTTON_3_PIN          2                                   // inactive in v1
 
-#define BTN_1                       (PORT_INPUT_OF_BUTTONS >> BUTTON_1_PIN)
-#define BTN_2                       (PORT_INPUT_OF_BUTTONS >> BUTTON_2_PIN)
-//#define PIN_BTN_3                 (PORT_INPUT_OF_BUTTONS >> BUTTON_3_PIN)   // inactive in v1
-#define BTN_RIGHT                   BTN_1
-#define BTN_LEFT                    BTN_2
+//#define BTN_TEST                (PINB >> 7)
+#define BTN_1                   (PORT_INPUT_OF_BUTTONS >> BUTTON_1_PIN)
+#define BTN_2                   (PORT_INPUT_OF_BUTTONS >> BUTTON_2_PIN)
+//#define PIN_BTN_3             (PORT_INPUT_OF_BUTTONS >> BUTTON_3_PIN)   // inactive in v1
 
 // Read button states
-#define isPressed(x)                ((x & 0b1) == 0)
-#define isReleased(x)               ((x & 0b1) == 1)
+#define isPressed(x)             ((x & 0b1) == 0)
+#define isReleased(x)            ((x & 0b1) == 1)
 
 
 // ADC channels of potmeters
-#define POT_TEST                    0
-#define POT1                        5
-#define POT2                        4
+#define POT_TEST                0
+#define POT1                    5
+#define POT2                    4
 
 // States of feedback LED
-#define OFF                         0
-#define GREEN                       1
-#define RED                         2
-#define YELLOW                      3
+#define OFF                     0
+#define GREEN                   1
+#define RED                     2
+#define YELLOW                  3
 
 #ifdef TESTBOARD
-    #define LEDBAR                  PORTD
+    #define LEDBAR              PORTD
 #endif
 
-//////////////////////////////////////        OTHERS         ////////////////////////////////////
-#define DEFAULT_DELAY               100
+//////////////////////////////////        OTHERS         ////////////////////////////////
+#define DEFAULT_DELAY           100
 
-#define POT_MAX_VALUE               1023
+#define POT_MAX_VALUE           1023
 
-#define RIGHT_END_POSITION          SERVO_RIGHT
-#define LEFT_END_POSITION           SERVO_LEFT
+#define RIGHT_END_POSITION      SERVO_RIGHT
+#define LEFT_END_POSITION       SERVO_LEFT
 
-// Identify direction (of previously pressed button)
-#define NONE                        0
-#define RIGHT                       1
-#define LEFT                        2
+#define NONE                    0
+#define RIGHT                   1
+#define LEFT                    2
+#define BTN_RIGHT               BTN_1
+#define BTN_LEFT                BTN_2
 
 // System wait for BUTTON_RELEASE_DELAY ms before do the next command
 // to avoid unwanted re-detection of buttonPress on same button.
-#define BUTTON_RELEASE_DELAY        500
+#define BUTTON_RELEASE_DELAY    300
 
-// Minimum delay in continous rotation to prevent from to fast rotating
-#define MIN_DELAY_FOR_ROTATION      50
+//
+#define SERVO_EDGE_THRESHOLD    100
 
-// TRY to prevent servo "quake" symptom
-#define DELAY_AFTER_SERVO_ROTATION_IN_READY_STATUS 30
-
-// For using tighten servo degree to prevent problems 
-// coused by servo's internal limit-detection
-#define SERVO_EDGE_THRESHOLD        100
-
-//////////////////////////////////////        STATES         ////////////////////////////////////
-// Ready to use. User can set initial direction and speed.
-// System is waiting for start input (btn). (Servo continuously follow the setted position.)
-#define READY                       1
-// Rotation started, but not finished yet.
-#define ROTATION_IN_PROGRESS        2
-// Rotation finished.System is waiting for user input (btn) to get "READY" state.
-#define ROTATION_DONE               3
+//////////////////////////////////        STATES         ////////////////////////////////
+ // Ready to use. User can set initial direction and speed.
+ // System is waiting for start input (btn). (Servo continuously follow the setted position.)
+#define READY                   0
+ // Rotation started, but not finished yet.
+#define ROTATION_IN_PROGRESS    1
+ // Rotation finished.System is waiting for user input (btn) to get "READY" state.
+#define ROTATION_DONE           2
 
 
-// Additional information can be displayed on ledbar (in unused io-ports)
-// when configuration runs in testboard.
-#ifdef TESTBOARD
-    void showValueOnLedBar(unsigned short value, unsigned short min, unsigned short max){
-        LEDBAR = getValueToShow(
-            value - min, 
-            max - min
-        );
-    }
-#endif
-
-
-// Wait function can be used instead of direct usage of "_delay_ms(val)" function
-// because of the input range problem of "_dalay_ms()" function.
 void wait(unsigned short val) {
+
     while(val--) _delay_ms(1);
+
 }
 
 void _wait(){
     _delay_ms(DEFAULT_DELAY);
+}
+
+void wait_us(double val){
+    while(val--) _delay_us(1);
 }
 
 
@@ -168,35 +153,14 @@ void setLed(unsigned short color){
 }
 
 
-// Determine conditions when servo reached any end position
 #define isRotationDone() ( ((btnPressedPreviously == RIGHT && (getServoPosition() > RIGHT_END_POSITION + SERVO_EDGE_THRESHOLD)) || (btnPressedPreviously == LEFT && (getServoPosition() < LEFT_END_POSITION - SERVO_EDGE_THRESHOLD)))?0:1 )
 
-
-// Calculate difference between given values (can not be negative)
 unsigned short diff(unsigned short x, unsigned short y){
     return ( ((x)>(y))?((x)-(y)):((y)-(x)) );
 }
 
-
-// Modify servo direction with given value
-void rotateServo(short value){
-    setServoPosition( getServoPosition() + value );
-}
-
-
-// Calculate delay between iteration steps of rotation
-unsigned short calculateDelayOfRotationSteps(uint16_t speedInput){
-    return ( MIN_DELAY_FOR_ROTATION + (unsigned short)(speedInput) );
-}
-
-
-// Calculate servoPosition from potmeter input
-unsigned short calculateServoPositionFromDirectionInput(uint16_t positionInput){
-    return ( ((unsigned short) (POT_MAX_VALUE - positionInput) * 1.9f) + SERVO_OUTPUT_MIN );
-}
-
-
 void init(){   
+    
     //                 LED
     // Set LED pins as output
     DDRB |= (1 << LED_PIN_GREEN) 
@@ -220,8 +184,8 @@ void init(){
         DDRD = 0xFF;
         LEDBAR = 170;
     #endif
-}
 
+}
 
 int main(){
 
@@ -238,6 +202,10 @@ int main(){
     unsigned char currentState = READY;
     setLed(GREEN);
 
+        //adc1 = (readADC(POT_TEST));
+        //if( released(BTN_TEST) ){
+        //setServoPosition(val);
+
     while(1){
         
         if(currentState == READY){ 
@@ -247,16 +215,17 @@ int main(){
             wait(5);
             speedInput =    readADC(POT2);
             wait(5);
-
             #ifdef TESTBOARD
                 LEDBAR = getValueToShow(speedInput, POT_MAX_VALUE);
             #endif
 
             // Servo continuously follow the setted position.
-            setServoPosition( calculateServoPositionFromDirectionInput(positionInput) );
-
-            // Prevent servo "quake" symptom (seems partly helps)
-            wait(DELAY_AFTER_SERVO_ROTATION_IN_READY_STATUS);
+            /*unsigned short newPosition = ( ((unsigned short)(POT_MAX_VALUE-positionInput) * 1.9f) + SERVO_OUTPUT_MIN);
+            if(diff(newPosition, getServoPosition) > 60){
+            	setServoPosition( ((unsigned short)(POT_MAX_VALUE-positionInput) * 1.9f) + SERVO_OUTPUT_MIN );
+            }*/
+			setServoPosition( ((unsigned short)(POT_MAX_VALUE-positionInput) * 1.9f) + SERVO_OUTPUT_MIN );
+			wait(30);
 
 
             // System is waiting for start input (btn). 
@@ -273,13 +242,11 @@ int main(){
 
                 if( ((btnPressedPreviously == RIGHT) && (isReleased(BTN_RIGHT))) ||
                     ((btnPressedPreviously == LEFT ) && (isReleased(BTN_LEFT ))) ){ 
-
-                    // button what has been pressed previously AND released now..
+                    // button what has been pressed previously is released now..
                     // btnPressedPreviously variable stores the identifier of button what has been released just now.
                     setLed(RED);
                     currentState = ROTATION_IN_PROGRESS;
                     wait(BUTTON_RELEASE_DELAY);
-
                 }
 
             }
@@ -297,23 +264,18 @@ int main(){
                 setLed(YELLOW);
 
             }else{
-
                 if(btnPressedPreviously == RIGHT){
                     //TODO
                     #ifdef TESTBOARD
-                        showValueOnLedBar( getServoPosition(), SERVO_OUTPUT_MIN, SERVO_OUTPUT_MAX );
+                        LEDBAR = getValueToShow(getServoPosition()-SERVO_OUTPUT_MIN, SERVO_OUTPUT_MAX - SERVO_OUTPUT_MIN);
                     #endif
-                    
-                    rotateServo(-1);
-                    wait( calculateDelayOfRotationSteps(speedInput) );
-
+                    setServoPosition(getServoPosition() - 1);
+                    wait(50 + (unsigned short)(speedInput));
                 }
                 else
-
                 if(btnPressedPreviously == LEFT){
                     //TODO
                 }
-
             }
 
         } // eof ROTATION_IN_PROGRESS
@@ -327,16 +289,13 @@ int main(){
 
             // Check that any button is pressed..
             if(btnPressedPreviously == NONE){
-
                 if(isPressed(BTN_RIGHT)){
                     btnPressedPreviously = RIGHT;
                 }else
                 if(isPressed(BTN_LEFT)){
                     btnPressedPreviously = LEFT;
                 }
-
             }else{
-
                 // Check that previously pressed button is released..
                 if( (btnPressedPreviously == RIGHT) && (isReleased(BTN_RIGHT)) ||
                     (btnPressedPreviously == LEFT ) && (isReleased(BTN_LEFT )) ){
@@ -349,7 +308,6 @@ int main(){
                     setLed(GREEN);
 
                 }
-
             }
 
         } // eof ROTATION_DONE

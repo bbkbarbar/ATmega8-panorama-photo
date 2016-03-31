@@ -254,8 +254,13 @@ int main(){
 
             // Servo continuously follow the setted position.
             setServoPosition( calculateServoPositionFromDirectionInput(positionInput) );
+            /*unsigned short newPosition = ( ((unsigned short)(POT_MAX_VALUE-positionInput) * 1.9f) + SERVO_OUTPUT_MIN);
+            if(diff(newPosition, getServoPosition) > 60){
+                setServoPosition( ((unsigned short)(POT_MAX_VALUE-positionInput) * 1.9f) + SERVO_OUTPUT_MIN );
+            }*/
+            //setServoPosition( ((unsigned short)(POT_MAX_VALUE-positionInput) * 1.9f) + SERVO_OUTPUT_MIN );
 
-            // Prevent servo "quake" symptom (seems partly helps)
+            // TRY to prevent servo "quake" symptom
             wait(DELAY_AFTER_SERVO_ROTATION_IN_READY_STATUS);
 
 
