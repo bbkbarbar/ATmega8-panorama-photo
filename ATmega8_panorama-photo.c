@@ -28,6 +28,8 @@
 //#define SPIKE
 #define TESTBOARD
 
+#define ENABLE_ROTATE_BACK
+
 #define F_CPU 1000000
 
 #include "lib/ATmega8_read_ADC.c"
@@ -102,6 +104,10 @@
 #define RIGHT                       1
 #define LEFT                        2
 
+#define INC_TO_RIGHT                (-1)
+#define INC_TO_LEFT                 (1)
+
+
 // System wait for BUTTON_RELEASE_DELAY ms before do the next command
 // to avoid unwanted re-detection of buttonPress on same button.
 #define BUTTON_RELEASE_DELAY        500
@@ -115,6 +121,10 @@
 // For using tighten servo degree to prevent problems 
 // coused by servo's internal limit-detection
 #define SERVO_EDGE_THRESHOLD        100
+
+// Used when system is in "ROTATE_BACK" state
+// and need to determine when servo almost reached the adjusted initial position
+#define SERVO_ROTATE_BACK_THRESHOLD 50
 
 //////////////////////////////////////        STATES         ////////////////////////////////////
 // Ready to use. User can set initial direction and speed.
@@ -231,16 +241,17 @@ int main(){
     init();
     initADC();
     initServoControl();
+
+#ifndef SPIKE
     
     uint16_t positionInput, speedInput;
     #ifdef TESTBOARD
         unsigned short m, n;
     #endif
 
-    unsigned char btnPressedPreviously = 0;
 
-#ifndef SPIKE
-
+    // Initialize values and feedback according to get READY state..
+    unsigned char btnPressedPreviously = NONE;
     unsigned char currentState = READY;
     setLed(GREEN);
 
@@ -250,13 +261,13 @@ int main(){
             
             // User can set initial direction and speed.
             speedInput =    readADC(POT2);
-            positionInput = ((int)readADC(POT1));
+            positionInput = readADC(POT1);
             //positionInput = ((int)readADC(POT1));  // @Remove after next test
 
             // Show "value-quaking" of positionInput
             #ifdef TESTBOARD
                 #ifdef TEST
-                    m = ((unsigned short)(positionInput / 10) * 10);
+                    m = ((unsigned short)(positionInput / 10) * 10); // round to
                     n = m + 8;
                     showValueOnLedBar( (unsigned short)positionInput, m, n );
                 #endif
@@ -282,9 +293,10 @@ int main(){
 
                 if( ((btnPressedPreviously == RIGHT) && (isReleased(BTN_RIGHT))) ||
                     ((btnPressedPreviously == LEFT ) && (isReleased(BTN_LEFT ))) ){ 
-
                     // button what has been pressed previously AND released now..
                     // btnPressedPreviously variable stores the identifier of button what has been released just now.
+
+                    // Set values and feedback according to get ROTATION_IN_PROGRESS state
                     setLed(RED);
                     currentState = ROTATION_IN_PROGRESS;
                     wait(BUTTON_RELEASE_DELAY);
@@ -301,6 +313,7 @@ int main(){
 
             if(isRotationDone()){
 
+                // Set values and feedback according to get ROTATION_DONE state
                 btnPressedPreviously = NONE;
                 currentState = ROTATION_DONE;
                 setLed(YELLOW);
@@ -313,7 +326,7 @@ int main(){
                         showValueOnLedBar( getServoPosition(), SERVO_OUTPUT_MIN, SERVO_OUTPUT_MAX );
                     #endif
                     
-                    rotateServo(-1); // TODO DEFINE ROTATION INC VALUE
+                    rotateServo(INC_TO_RIGHT);
                     wait( calculateDelayOfRotationSteps(speedInput) );
 
                 }
@@ -325,7 +338,7 @@ int main(){
                         showValueOnLedBar( getServoPosition(), SERVO_OUTPUT_MIN, SERVO_OUTPUT_MAX );
                     #endif
                     
-                    rotateServo( 1); // TODO DEFINE ROTATION INC VALUE
+                    rotateServo(INC_TO_LEFT);
                     wait( calculateDelayOfRotationSteps(speedInput) );
 
                 }
@@ -357,19 +370,81 @@ int main(){
                 if( (btnPressedPreviously == RIGHT) && (isReleased(BTN_RIGHT)) ||
                     (btnPressedPreviously == LEFT ) && (isReleased(BTN_LEFT )) ){
                     
-                    btnPressedPreviously = NONE;
+                    #ifdef ENABLE_ROTATE_BACK                    
+                        // re-read position input before get ROTATE_BACK state..
+                        positionInput = readADC(POT1);
 
-                    setLed(OFF);
+                        // Set values and feedback according to get ROTATE_BACK state
+                        currentState = ROTATE_BACK;
+                        setLed(OFF);
+                        btnPressedPreviously = NONE;
+                    #endif
+                    #ifndef ENABLE_ROTATE_BACK
+                        // Set values and feedback according to get ROTATE_BACK state
+                        currentState = READY;
+                        btnPressedPreviously = NONE;
+                        setLed(GREEN);
+                    #endif
                     wait(BUTTON_RELEASE_DELAY);
 
-                    currentState = READY;
-                    setLed(GREEN);
 
                 }
 
             }
 
         } // eof ROTATION_DONE
+
+        else
+
+        if(currentState == ROTATE_BACK){
+
+            unsigned short wantedPosition = calculateServoPositionFromDirectionInput(positionInput);
+            uint8_t direction;
+
+            // Note: RIGHT < LEFT
+                    //2400               1500
+            if( getServoPosition() > wantedPosition ){ // need to rotate right (--)
+                direction = INC_TO_RIGHT;
+            }else{ // need to rotate left (++)
+                direction = INC_TO_LEFT;
+            }
+
+            short attempsToRotateBack = 0;
+
+            //               900
+            unsigned short distance;
+            //            900 .. 890 .. 880 ..                            >  50
+            while( ((distance = diff(getServoPosition(), wantedPosition))  > SERVO_ROTATE_BACK_THRESHOLD) && (attempsToRotateBack < 300) && (attempsToRotateBack >= 0) ){ // Need to rotate back..
+
+                if(attempsToRotateBack < 10){ // to fine starts
+                    rotateServo( direction );
+                }else
+
+                if( distance > 400 ){
+                    rotateServo( direction * 10 );
+                }else
+                if( distance > 250 ){
+                    rotateServo( direction * 5 );
+                }else
+                if( distance > 150 ){
+                    rotateServo( direction * 2 );
+                }else{
+                    rotateServo( direction );
+                }
+
+                attempsToRotateBack++;
+
+                wait(20);
+
+            }
+
+            // Set values and feedback according to get READY state 
+            currentState = READY;
+            btnPressedPreviously = NONE;
+            setLed(GREEN);
+
+
+        } // eof ROTATE_BACK
 
     }
 
@@ -382,10 +457,14 @@ int main(){
         // TestCode here
         positionInput = readADC(POT1);
         speedInput =    readADC(POT2);
-        unsigned char output = 0;
-        output |= getValueToShow(positionInput / 2, POT_MAX_VALUE/2);
-        output |= getValueToShow(speedInput / 2, POT_MAX_VALUE/2) << 4;
-        LEDBAR = output;
+
+        #ifdef TESTBOARD
+            unsigned char output = 0;
+            output |= getValueToShow(positionInput / 2, POT_MAX_VALUE/2);
+            output |= getValueToShow(speedInput / 2, POT_MAX_VALUE/2) << 4;
+            LEDBAR = output;
+        #endif
+
     }
 
 #endif
