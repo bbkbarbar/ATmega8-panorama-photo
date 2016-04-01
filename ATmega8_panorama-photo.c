@@ -230,6 +230,9 @@ int main(){
     initServoControl();
     
     uint16_t positionInput, speedInput, lastPositionInput = 0;
+    #ifdef TESTBOARD
+        unsigned short m, n;
+    #endif
 
     unsigned char btnPressedPreviously = 0;
 
@@ -237,8 +240,6 @@ int main(){
 
     unsigned char currentState = READY;
     setLed(GREEN);
-
-    unsigned short m, n;
 
     while(1){
         
@@ -250,7 +251,6 @@ int main(){
 
             #ifdef TESTBOARD
                 //LEDBAR = getValueToShow(speedInput, POT_MAX_VALUE);
-                
                 m = ((unsigned short)(positionInput / 10) * 10);
                 n = m + 8;
 
