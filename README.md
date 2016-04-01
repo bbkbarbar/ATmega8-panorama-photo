@@ -25,6 +25,7 @@ The device works from standard lithium battery with built-in battery charger.
 
 **Sequence diagram of states** (v1.1)
 ![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/sequence_v1_1_.png "Basic sequence diagram")
+[Editor](https://stackedit.io/editor)
 
 
 #### First "mainly working" version on testboard:
@@ -36,4 +37,4 @@ alt="IMAGE ALT TEXT HERE" width="240" height="180" border="1" /></a>
 **UseCase diagram**
 ![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/useCase_plan_1.png "UseCase diagram")
 
-[Previous test](https://youtu.be/i8isvKmdPvM)
+[Previous test #1](https://youtu.be/i8isvKmdPvM)
