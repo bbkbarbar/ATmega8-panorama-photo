@@ -25,7 +25,6 @@
  **************************************/
 
 //#define TEST
-//#define SPIKE
 #define TESTBOARD
 
 #define F_CPU 1000000
@@ -122,10 +121,8 @@
 #define READY                       1
 // Rotation started, but not finished yet.
 #define ROTATION_IN_PROGRESS        2
-// Rotation finished.System is waiting for user input (btn) to get "ROTATE_BACK" state.
+// Rotation finished.System is waiting for user input (btn) to get "READY" state.
 #define ROTATION_DONE               3
-// Servo rotating back before get "READY" state.
-#define ROTATE_BACK                 4
 
 
 // Additional information can be displayed on ledbar (in unused io-ports)
@@ -232,14 +229,14 @@ int main(){
     initADC();
     initServoControl();
     
-    uint16_t positionInput, speedInput;
+    uint16_t positionInput, speedInput, lastPositionInput = 0;
     #ifdef TESTBOARD
         unsigned short m, n;
     #endif
 
     unsigned char btnPressedPreviously = 0;
 
-#ifndef SPIKE
+#ifndef TEST
 
     unsigned char currentState = READY;
     setLed(GREEN);
@@ -251,23 +248,22 @@ int main(){
             // User can set initial direction and speed.
             speedInput =    readADC(POT2);
             positionInput = ((int)readADC(POT1));
-            //positionInput = ((int)readADC(POT1));  // @Remove after next test
 
-            // Show "value-quaking" of positionInput
             #ifdef TESTBOARD
-                #ifdef TEST
-                    m = ((unsigned short)(positionInput / 10) * 10);
-                    n = m + 8;
-                    showValueOnLedBar( (unsigned short)positionInput, m, n );
-                #endif
+                //LEDBAR = getValueToShow(speedInput, POT_MAX_VALUE);
+                m = ((unsigned short)(positionInput / 10) * 10);
+                n = m + 8;
+
+                showValueOnLedBar( (unsigned short)positionInput, m, n );
             #endif
 
             // Servo continuously follow the setted position.
             setServoPosition( calculateServoPositionFromDirectionInput(positionInput) );
 
             // Prevent servo "quake" symptom (seems partly helps)
-            wait(DELAY_AFTER_SERVO_ROTATION_IN_READY_STATUS); // @If PASSED remove after next test
+            wait(DELAY_AFTER_SERVO_ROTATION_IN_READY_STATUS);
 
+            lastPositionInput = positionInput;
             // System is waiting for start input (btn). 
             if( btnPressedPreviously == NONE ){
 
@@ -374,7 +370,7 @@ int main(){
     }
 
 #endif
-#ifdef SPIKE
+#ifdef TEST
 
     setLed(YELLOW);
     while(1){
