@@ -229,7 +229,7 @@ int main(){
     initADC();
     initServoControl();
     
-    uint16_t positionInput, speedInput;
+    uint16_t positionInput, speedInput, lastPositionInput = 0;
 
     unsigned char btnPressedPreviously = 0;
 
@@ -238,18 +238,23 @@ int main(){
     unsigned char currentState = READY;
     setLed(GREEN);
 
+    unsigned short m, n;
+
     while(1){
         
         if(currentState == READY){ 
             
             // User can set initial direction and speed.
-            positionInput = readADC(POT1);
-            wait(5);
             speedInput =    readADC(POT2);
-            wait(5);
+            positionInput = ((int)readADC(POT1));
 
             #ifdef TESTBOARD
-                LEDBAR = getValueToShow(speedInput, POT_MAX_VALUE);
+                //LEDBAR = getValueToShow(speedInput, POT_MAX_VALUE);
+                
+                m = ((unsigned short)(positionInput / 10) * 10);
+                n = m + 8;
+
+                showValueOnLedBar( (unsigned short)positionInput, m, n );
             #endif
 
             // Servo continuously follow the setted position.
@@ -258,7 +263,7 @@ int main(){
             // Prevent servo "quake" symptom (seems partly helps)
             wait(DELAY_AFTER_SERVO_ROTATION_IN_READY_STATUS);
 
-
+            lastPositionInput = positionInput;
             // System is waiting for start input (btn). 
             if( btnPressedPreviously == NONE ){
 
@@ -299,19 +304,26 @@ int main(){
             }else{
 
                 if(btnPressedPreviously == RIGHT){
-                    //TODO
+                    
                     #ifdef TESTBOARD
                         showValueOnLedBar( getServoPosition(), SERVO_OUTPUT_MIN, SERVO_OUTPUT_MAX );
                     #endif
                     
-                    rotateServo(-1);
+                    rotateServo(-1); // TODO DEFINE ROTATION INC VALUE
                     wait( calculateDelayOfRotationSteps(speedInput) );
 
                 }
                 else
 
                 if(btnPressedPreviously == LEFT){
-                    //TODO
+                    
+                    #ifdef TESTBOARD
+                        showValueOnLedBar( getServoPosition(), SERVO_OUTPUT_MIN, SERVO_OUTPUT_MAX );
+                    #endif
+                    
+                    rotateServo( 1); // TODO DEFINE ROTATION INC VALUE
+                    wait( calculateDelayOfRotationSteps(speedInput) );
+
                 }
 
             }
@@ -342,7 +354,8 @@ int main(){
                     (btnPressedPreviously == LEFT ) && (isReleased(BTN_LEFT )) ){
                     
                     btnPressedPreviously = NONE;
-                    
+
+                    setLed(OFF);
                     wait(BUTTON_RELEASE_DELAY);
 
                     currentState = READY;
