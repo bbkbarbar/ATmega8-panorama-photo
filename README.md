@@ -23,7 +23,7 @@ The device works from standard lithium battery with built-in battery charger.
  - Works with using a replaceable Li-ion battery (in size of 18650)
  - Contains built-in battery charger module (charging current max 1A from micro-usb port)
 
-**Sequence diagram of states**
+**Sequence diagram of states** (v1.1)
 ![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/sequence_v1_1.png "Basic sequence diagram")
 
 
