@@ -27,8 +27,7 @@
 //#define TEST
 //#define SPIKE
 #define TESTBOARD
-
-#define ENABLE_ROTATE_BACK
+//#define ENABLE_ROTATE_BACK
 
 #define F_CPU 1000000
 
@@ -244,9 +243,11 @@ int main(){
 
 #ifndef SPIKE
     
-    uint16_t positionInput, speedInput;
+    uint16_t positionInput = 0, speedInput = 0;
     #ifdef TESTBOARD
+    #ifdef TEST
         unsigned short m, n;
+    #endif
     #endif
 
 
@@ -367,8 +368,8 @@ int main(){
             }else{
 
                 // Check that previously pressed button is released..
-                if( (btnPressedPreviously == RIGHT) && (isReleased(BTN_RIGHT)) ||
-                    (btnPressedPreviously == LEFT ) && (isReleased(BTN_LEFT )) ){
+                if( ((btnPressedPreviously == RIGHT) && (isReleased(BTN_RIGHT))) ||
+                    ((btnPressedPreviously == LEFT ) && (isReleased(BTN_LEFT ))) ){
                     
                     #ifdef ENABLE_ROTATE_BACK                    
                         // re-read position input before get ROTATE_BACK state..
