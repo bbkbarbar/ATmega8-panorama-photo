@@ -1,6 +1,5 @@
-// ATmega8_Servo_control_WORKS_with_custom_50Hz_output_signal.c
 
-/***************************************
+ /*************************************\
  *           CURRENT version           *
  *                                     *
  *  Device: ATmega8                    *
@@ -12,21 +11,23 @@
  *   - Potmeter 1: PC5 (ch5)           *
  *   - Potmeter 2: PC4 (ch4)           *
  *   - Servo:      PB1 (OC1A)          *
- *   - LED1-green: PB6                 *
- *   - LED1-red:   PB7                 *
+ *   - LED1-green: PB7                 *
+ *   - LED1-red:   PB6                 *
  *                                     *
  *  Pin configuration @TEST:           *
  *   - Button 1:   PB5                 *
  *   - Button 2:   PB4                 *
  *   - LEDBAR:     PD0-7               *
  *                                     *
+ *  Test: WORKS on target board v1.0   *
+ *                                     *
  *         Boor Andras  @ 2016         *
  *                                     *
- **************************************/
+ \*************************************/
 
 //#define TEST
 //#define SPIKE
-#define TESTBOARD
+//#define TESTBOARD
 //#define ENABLE_ROTATE_BACK
 
 #define F_CPU 1000000
@@ -47,8 +48,8 @@
 /////////////////////////////////////     HW DEFINITIONS    /////////////////////////////////////
 // LED
 #define PORT_OF_LEDS                PORTB
-#define LED_PIN_GREEN               6
-#define LED_PIN_RED                 7
+#define LED_PIN_GREEN               7
+#define LED_PIN_RED                 6
 
 // BUTTON
 #ifndef TESTBOARD
@@ -198,7 +199,7 @@ void rotateServo(short value){
 
 // Calculate delay between iteration steps of rotation
 unsigned short calculateDelayOfRotationSteps(uint16_t speedInput){
-    return ( MIN_DELAY_FOR_ROTATION + (unsigned short)(speedInput) );
+    return (unsigned short)( MIN_DELAY_FOR_ROTATION + speedInput );
 }
 
 
@@ -262,8 +263,14 @@ int main(){
             
             // User can set initial direction and speed.
             speedInput =    readADC(POT2);
+            if(speedInput > 800){
+                speedInput *= 2;
+            }
+            #ifdef TESTBOARD
+                showValueOnLedBar( (unsigned short)speedInput, 0, POT_MAX_VALUE*2);
+            #endif
+            
             positionInput = readADC(POT1);
-            //positionInput = ((int)readADC(POT1));  // @Remove after next test
 
             // Show "value-quaking" of positionInput
             #ifdef TESTBOARD
@@ -278,7 +285,7 @@ int main(){
             setServoPosition( calculateServoPositionFromDirectionInput(positionInput) );
 
             // Prevent servo "quake" symptom (seems partly helps)
-            wait(DELAY_AFTER_SERVO_ROTATION_IN_READY_STATUS); // @If PASSED remove after next test
+            //wait(DELAY_AFTER_SERVO_ROTATION_IN_READY_STATUS); // @If PASSED remove after next test
 
             // System is waiting for start input (btn). 
             if( btnPressedPreviously == NONE ){
@@ -380,14 +387,15 @@ int main(){
                         setLed(OFF);
                         btnPressedPreviously = NONE;
                     #endif
+
                     #ifndef ENABLE_ROTATE_BACK
                         // Set values and feedback according to get ROTATE_BACK state
                         currentState = READY;
                         btnPressedPreviously = NONE;
                         setLed(GREEN);
                     #endif
-                    wait(BUTTON_RELEASE_DELAY);
 
+                    wait(BUTTON_RELEASE_DELAY);
 
                 }
 
@@ -444,7 +452,6 @@ int main(){
             btnPressedPreviously = NONE;
             setLed(GREEN);
 
-
         } // eof ROTATE_BACK
 
     }
@@ -473,3 +480,4 @@ int main(){
     return 0;
 
 }
+
