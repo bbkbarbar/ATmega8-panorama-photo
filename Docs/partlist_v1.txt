@@ -1,0 +1,20 @@
+Partlist
+
+Exported from ATmega8_panorama-photo_v2.sch at 2016.04.02. 10:25:53
+
+EAGLE Version 5.10.0 Copyright (c) 1988-2010 CadSoft
+
+Part            	Device							Package  	Library  		
+
+ATMEGA8             DIL28-3      					DIL28-3    	ic-package
+C1                  Ceramic capacitator     		C2.5-3     	capacitor-wima
+LED_RG              connector - 3 pin				MA03-1     	con-lstb
+POT1                connector - 3 pin				MA03-1     	con-lstb
+POT2            	connector - 3 pin				MA03-1     	con-lstb
+PWR_SUPPLY_CONN     connector - 2 pin				22-23-2021 	con-molex
+R1                  R-EU_0204/7  					0204/7     	resistor
+R2                  R-EU_0204/7  					0204/7     	resistor
+R5                  R-EU_0207/5V 					0207/5V    	resistor
+R6                  R-EU_0207/5V 					0207/5V    	resistor
+SERVO               connector - 3 pin				MA03-1     	con-lstb
+SV1                 connector - 2x3 pin or 1x4 pin	MA03-2     	con-lstb
