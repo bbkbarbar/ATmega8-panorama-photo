@@ -29,7 +29,7 @@ The device works from standard lithium battery with built-in battery charger.
  - I/O output (at least 2)
  - Low energy consumption
  
-**Selected device** (MCU): Atmel **AVR ATmega8**
+**Selected device** (MCU): Atmel **AVR ATmega8** ([DataSheet](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/ATmega8_datasheet.pdf))
 
 
 ###Sequence diagram of states (v1.1)
