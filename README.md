@@ -46,6 +46,11 @@ alt="IMAGE ALT TEXT HERE" width="240" height="180" border="1" /></a>
 ![alt text](https://raw.githubusercontent.com/bbkbarbar/ATmega8-panorama-photo/master/Docs/Test_on_lego_v1_1.jpg " ")
 ![alt text](https://raw.githubusercontent.com/bbkbarbar/ATmega8-panorama-photo/master/Docs/Test_on_lego_v1_2.jpg " ")
 
+**[Photo album](https://goo.gl/photos/7FJK6yykkkFa5fTw9)**
+
+
+
+
 **UseCase diagram**
 (..first plan..)
 ![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/useCase_plan_1.png "UseCase diagram")
