@@ -22,3 +22,17 @@ Note right of ROTATION_DONE: System is waiting for user input (btn) to get "READ
 ROTATION_DONE->ROTATE_BACK: Button pressed (any)
 ROTATE_BACK->READY: Servo returned to the initial position
 ```
+
+
+**Sequence diagram of states** (v1.2)
+```sequence
+READY-->READY: User can adjust the initial direction
+Note right of READY: Servo continuously follow the adjusted position.
+READY-->READY: User can set the speed of rotation
+READY->ROTATION_IN_PROGRESS: User press a button (for selected end)
+ROTATION_IN_PROGRESS-->ROTATION_DONE: User can interrupt rotation
+ROTATION_IN_PROGRESS->ROTATION_DONE: Rotation finished
+Note right of ROTATION_DONE: System is waiting for user input (btn) to get "READY" state.
+ROTATION_DONE->ROTATE_BACK: Button pressed (any)
+ROTATE_BACK->READY: Servo returned to the initial position
+```
