@@ -20,6 +20,7 @@ The device works from standard lithium battery with built-in battery charger.
  - User can set the position of mounted device in 2 axis to reach the optimal position of camera (where the camera's lens is exactly above the center point of rotation)
  - Works with using a replaceable Li-ion battery (in size of 18650)
  - Contains built-in battery charger module (charging current max 1A from micro-usb port)
+ - During rotation the user can interrupt the process. (since v1.2)
 
 ### MCU: 
 **Required features:**

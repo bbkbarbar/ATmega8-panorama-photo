@@ -1,8 +1,11 @@
 
  /*************************************\
- *           CURRENT version           *
+ *        Panorama-photo v1.2          *
  *                                     *
  *  Device: ATmega8                    *
+ *  Deploy configuration:              *
+ *   ISP freq: 115.2 kHz               *
+ *                                     *
  *                                     *
  *  Pin configuration:                 *
  *   @used:                            *
@@ -318,6 +321,23 @@ int main(){
         else
 
         if(currentState == ROTATION_IN_PROGRESS){ // Rotation started, but not finished yet.
+
+            // Option for user to interrupt rotation progress
+            if( (isPressed(BTN_LEFT)) && (isPressed(BTN_RIGHT)) ){
+                setLed(OFF);
+
+                // wait until all button released
+                while( (isPressed(BTN_LEFT)) || (isPressed(BTN_RIGHT)) ){
+                    wait(BUTTON_RELEASE_DELAY);
+                }
+
+                // When all button released get ROTATION_DONE state
+                currentState = ROTATION_DONE;
+                btnPressedPreviously = NONE;
+                setLed(YELLOW);
+            }
+
+            else
 
             if(isRotationDone()){
 
