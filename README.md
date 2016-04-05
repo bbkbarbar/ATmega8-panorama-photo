@@ -33,8 +33,8 @@ The device works from standard lithium battery with built-in battery charger.
 **Selected device** (MCU): Atmel **AVR ATmega8** ([DataSheet](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/ATmega8_datasheet.pdf))
 
 
-###Sequence diagram of states (v1.1)
-![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/sequence_v1_1_.png "Basic sequence diagram")
+###Sequence diagram of states (v1.2)
+![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/sequence_v1_2_.png "Basic sequence diagram")
 
 
 #### First "mainly working" version on testboard:
@@ -53,7 +53,7 @@ alt="IMAGE ALT TEXT HERE" width="240" height="180" border="1" /></a>
 
 
 **UseCase diagram**
-(..first plan..)
-![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/useCase_plan_1.png "UseCase diagram")
+
+[First version can be seen here..](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/useCase_plan_1.png)
 
 [Previous test #1](https://youtu.be/i8isvKmdPvM)
