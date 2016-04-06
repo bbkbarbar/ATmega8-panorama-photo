@@ -20,7 +20,7 @@ The device works from standard lithium battery with built-in battery charger.
  - User can set the position of mounted device in 2 axis to reach the optimal position of camera (where the camera's lens is exactly above the center point of rotation)
  - Works with using a replaceable Li-ion battery (in size of 18650)
  - Contains built-in battery charger module (charging current max 1A from micro-usb port)
- - During rotation the user can interrupt the process. (since v1.2)
+ - User can interrupt the process during rotation. (since v1.2) 
 
 ### MCU: 
 **Required features:**
@@ -33,7 +33,7 @@ The device works from standard lithium battery with built-in battery charger.
 **Selected device** (MCU): Atmel **AVR ATmega8** ([DataSheet](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/ATmega8_datasheet.pdf))
 
 
-###Sequence diagram of states (v1.2)
+#### Sequence diagram of states (v1.2)
 ![alt text](https://github.com/bbkbarbar/ATmega8-panorama-photo/blob/master/Docs/sequence_v1_2_.png "Basic sequence diagram")
 
 
