@@ -1,6 +1,6 @@
 
  /*************************************\
- *        Panorama-photo v1.2          *
+ *        Panorama-photo v1.3          *
  *                                     *
  *  Device: ATmega8                    *
  *  Deploy configuration:              *
@@ -11,15 +11,17 @@
  *   @used:                            *
  *   - Button 1:   PD0                 *
  *   - Button 2:   PD1                 *
+ *   - Button 3:   PD2                 *
  *   - Potmeter 1: PC5 (ch5)           *
  *   - Potmeter 2: PC4 (ch4)           *
  *   - Servo:      PB1 (OC1A)          *
  *   - LED1-green: PB7                 *
  *   - LED1-red:   PB6                 *
  *                                     *
- *  Pin configuration @TEST:           *
+ *  Pin configuration on TESTBOARD:    *
  *   - Button 1:   PB5                 *
  *   - Button 2:   PB4                 *
+ *   - Button 3:   PB3                 *
  *   - LEDBAR:     PD0-7               *
  *                                     *
  *  Test: WORKS on target board v1.0   *
@@ -32,6 +34,8 @@
 //#define SPIKE
 //#define TESTBOARD
 //#define ENABLE_ROTATE_BACK
+//#define MIDDLE_BUTTON_USED
+
 
 #define F_CPU 1000000
 
@@ -60,19 +64,23 @@
     #define PORT_OF_BUTTONS         PORTD
     #define BUTTON_1_PIN            0
     #define BUTTON_2_PIN            1
+    #define BUTTON_3_PIN            2
 #else
     #define PORT_INPUT_OF_BUTTONS   PINB
     #define PORT_OF_BUTTONS         PORTB
     #define BUTTON_1_PIN            5
     #define BUTTON_2_PIN            4
+    #define BUTTON_3_PIN            3
 #endif
 //#define BUTTON_3_PIN              2                                         // inactive in v1
 
 #define BTN_1                       (PORT_INPUT_OF_BUTTONS >> BUTTON_1_PIN)
 #define BTN_2                       (PORT_INPUT_OF_BUTTONS >> BUTTON_2_PIN)
+#define BTN_3                       (PORT_INPUT_OF_BUTTONS >> BUTTON_3_PIN)
 //#define PIN_BTN_3                 (PORT_INPUT_OF_BUTTONS >> BUTTON_3_PIN)   // inactive in v1
 #define BTN_RIGHT                   BTN_1
 #define BTN_LEFT                    BTN_2
+#define BTN_MID                     BTN_3
 
 // Read button states
 #define isPressed(x)                ((x & 0b1) == 0)
@@ -228,8 +236,13 @@ void init(){
 
     //               BUTTONS
     // Setup the pull-up resistor for buttons 
-    PORT_OF_BUTTONS |= (1 << BUTTON_1_PIN) 
+    PORT_OF_BUTTONS |= (1 << BUTTON_1_PIN)
+    #ifdef MIDDLE_BUTTON_USED
+                    |  (1 << BUTTON_3_PIN)
+    #endif
                     |  (1 << BUTTON_2_PIN);
+
+    PORT_OF_BUTTONS = 0b00111000;
     //PORTB |= 0b10000000; //PB7 pin for TEST
 
     #ifdef TESTBOARD
@@ -244,6 +257,11 @@ int main(){
     init();
     initADC();
     initServoControl();
+
+    setLed(RED);
+    _delay_ms(2000);
+    setLed(YELLOW);
+    _delay_ms(2000);
 
 #ifndef SPIKE
     
@@ -284,8 +302,16 @@ int main(){
                 #endif
             #endif
 
+
             // Servo continuously follow the setted position.
-            setServoPosition( calculateServoPositionFromDirectionInput(positionInput) );
+            #ifdef MIDDLE_BUTTON_USED
+                if( isPressed(BTN_MID) ){
+                    setServoPosition( calculateServoPositionFromDirectionInput(positionInput) );
+                }
+            #endif
+            #ifndef MIDDLE_BUTTON_USED
+                setServoPosition( calculateServoPositionFromDirectionInput(positionInput) );
+            #endif
 
             // Prevent servo "quake" symptom (seems partly helps)
             //wait(DELAY_AFTER_SERVO_ROTATION_IN_READY_STATUS); // @If PASSED remove after next test
@@ -500,4 +526,3 @@ int main(){
     return 0;
 
 }
-
