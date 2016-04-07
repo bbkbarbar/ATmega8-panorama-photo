@@ -3,6 +3,8 @@
  *        Panorama-photo v1.2          *
  *                                     *
  *  Device: ATmega8                    *
+ *          mega8L-8PU - OK            *
+ *          mega8-16PU - ??            *
  *  Deploy configuration:              *
  *   ISP freq: 115.2 kHz               *
  *                                     *
