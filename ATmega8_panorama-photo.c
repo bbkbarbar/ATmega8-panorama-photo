@@ -6,6 +6,7 @@
  *          mega8L-8PU - OK            *
  *          mega8-16PU - ??            *
  *  Deploy configuration:              *
+ *   SUT_CKSEL: ________               *
  *   ISP freq: 115.2 kHz               *
  *                                     *
  *                                     *
@@ -32,7 +33,7 @@
 
 //#define TEST
 //#define SPIKE
-//#define TESTBOARD
+#define TESTBOARD
 //#define ENABLE_ROTATE_BACK
 
 #define F_CPU 1000000
